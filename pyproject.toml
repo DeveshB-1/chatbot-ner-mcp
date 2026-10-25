@@ -1,0 +1,40 @@
+[project]
+name = "chatbot-ner-mcp"
+version = "0.1.0"
+description = "MCP server that gives LLM agents Haptik's chatbot_ner detectors (dates, times, numbers, phone numbers in Indic languages) as tools"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "mcp>=2.3,<3",
+    "freezegun>=1.5",
+    "pyyaml>=6",
+    # runtime deps of hellohaptik/chatbot_ner's ner_v2 detectors (see vendor/chatbot_ner/requirements.txt)
+    "elasticsearch==5.5.3",
+    "requests-aws4auth",
+    "requests",
+    "structlog",
+    "six",
+    "pandas",
+    "pytz",
+    "python-dateutil",
+    "regex",
+    "phonenumberslite==8.10.18",
+    "word2number",
+]
+
+[project.scripts]
+chatbot-ner-mcp = "chatbot_ner_mcp.server:main"
+ner-probe = "chatbot_ner_mcp.probe:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/chatbot_ner_mcp"]
+
+[dependency-groups]
+dev = ["pytest>=8", "anyio"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

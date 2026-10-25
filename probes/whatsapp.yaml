@@ -1,0 +1,47 @@
+# WhatsApp-style messages a booking / delivery / callback agent would see.
+# `expect` is what the customer means. The clock is pinned so relative dates are stable.
+# 2026-10-21 is a Wednesday.
+now: "2026-10-21T10:00:00+05:30"
+cases:
+  # ---- dates
+  - {id: date-abs-1,   slot: date, text: "can I get a slot on 5th nov",        expect: ["2026-11-05"]}
+  - {id: date-abs-2,   slot: date, text: "31/10 please",                       expect: ["2026-10-31"]}
+  - {id: date-rel-1,   slot: date, text: "tomorrow evening works",             expect: ["2026-10-22"]}
+  - {id: date-rel-2,   slot: date, text: "day after tomorrow",                 expect: ["2026-10-23"]}
+  - {id: date-rel-3,   slot: date, text: "next monday please",                 expect: ["2026-10-26"]}
+  - {id: date-day-1,   slot: date, text: "book for 29th",                      expect: ["2026-10-29"]}
+  - {id: date-range-1, slot: date, text: "from 28 oct to 2 nov",               expect: ["2026-10-28", "2026-11-02"]}
+  - {id: date-wkend-1, slot: date, text: "can someone come this weekend",      expect: ["2026-10-24", "2026-10-25"]}
+  - {id: date-hi-1,    slot: date, lang: hi, text: "parso aa sakta hu",        expect: ["2026-10-23"]}
+  - {id: date-hi-2,    slot: date, lang: hi, text: "agle somvar ko delivery chahiye", expect: ["2026-10-26"]}
+  - {id: date-hi-3,    slot: date, lang: hi, text: "कल शाम को कॉल करना",       expect: ["2026-10-22"]}
+  - {id: date-hi-past, slot: date, lang: hi, past: true, text: "maine kal payment kiya tha", expect: ["2026-10-20"],
+     note: "kal = yesterday here; the agent sets refers_to_past"}
+  - {id: date-mr-1,    slot: date, lang: mr, text: "उद्या येऊ शकता का",        expect: ["2026-10-22"]}
+  # ---- times
+  - {id: time-en-1,    slot: time, text: "at 7:30 pm",                         expect: ["19:30"]}
+  - {id: time-en-2,    slot: time, text: "noon is fine",                       expect: ["12:00"]}
+  - {id: time-en-3,    slot: time, text: "between 3 and 5 pm",                 expect: ["15:00", "17:00"]}
+  - {id: time-hi-1,    slot: time, lang: hi, text: "shaam 5 baje",             expect: ["17:00"]}
+  - {id: time-hi-2,    slot: time, lang: hi, text: "subah 10 baje",            expect: ["10:00"]}
+  - {id: time-hi-3,    slot: time, lang: hi, text: "raat 9:30 baje",           expect: ["21:30"]}
+  - {id: time-hi-4,    slot: time, lang: hi, text: "शाम 6 बजे",                expect: ["18:00"]}
+  - {id: time-hi-5,    slot: time, lang: hi, text: "shaam 5 baje 2 log aayenge", expect: ["17:00"],
+     note: "2 log = 2 people"}
+  # ---- numbers
+  - {id: num-en-1,     slot: number, text: "I need 2 rooms",                   expect: [2]}
+  - {id: num-en-2,     slot: number, text: "budget is 1.5 lakh",               expect: [150000]}
+  - {id: num-en-3,     slot: number, text: "2,50,000 rupees",                  expect: [250000]}
+  - {id: num-en-4,     slot: number, text: "around 5k",                        expect: [5000]}
+  - {id: num-hi-1,     slot: number, lang: hi, text: "dedh hazaar",            expect: [1500]}
+  - {id: num-hi-2,     slot: number, lang: hi, text: "dhai sau",               expect: [250]}
+  - {id: num-hi-3,     slot: number, lang: hi, text: "sava do sau",            expect: [225]}
+  # ---- phones
+  - {id: ph-1,         slot: phone, text: "my no is 9820012345",               expect: ["+919820012345"]}
+  - {id: ph-2,         slot: phone, text: "+91-98200-12345",                   expect: ["+919820012345"]}
+  - {id: ph-3,         slot: phone, text: "09820012345",                       expect: ["+919820012345"]}
+  - {id: ph-4,         slot: phone, text: "office 022-2345 6789",              expect: ["+912223456789"]}
+  - {id: ph-short-1,   slot: phone, text: "pin 400001 and mobile 9820012345",  expect: ["+919820012345"]}
+  - {id: ph-short-2,   slot: phone, text: "pin 400001, call 9820012345 or 9819983132", expect: ["+919820012345", "+919819983132"]}
+  - {id: ph-short-3,   slot: phone, text: "mobile 9820012345, pin 400001",     expect: ["+919820012345"]}
+  - {id: ph-long-1,    slot: phone, text: "order id 9820012345678 is wrong",   expect: []}

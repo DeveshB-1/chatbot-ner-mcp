@@ -1,0 +1,54 @@
+diff --git a/ner_v2/detectors/pattern/phone_number/phone_number_detection.py b/ner_v2/detectors/pattern/phone_number/phone_number_detection.py
+index 90097ff4..c01e2a7a 100644
+--- a/ner_v2/detectors/pattern/phone_number/phone_number_detection.py
++++ b/ner_v2/detectors/pattern/phone_number/phone_number_detection.py
+@@ -111,7 +111,9 @@ class PhoneDetector(BaseDetector):
+                 # Get the national number and check its length is below 8 (including contry code) and \
+                 # Exclude numbers that are too short to be a valid phone number (e.g., ticket numbers)
+                 if national_number_len < 8:
+-                    self.original_phone_text.append(self.text)
++                    # Skip it entirely. Appending to original_phone_text here without a matching
++                    # entry in self.phone shifts the two lists out of step, and check_for_alphas()
++                    # then drops or mislabels every real phone number that comes after it.
+                     continue
+             except Exception:
+                 # Not logging exception object as structlog.exception() will print entire traceback
+diff --git a/ner_v2/tests/pattern/phone_number/phone_number_ner_tests.yaml b/ner_v2/tests/pattern/phone_number/phone_number_ner_tests.yaml
+index f04ef56a..97ff2f28 100644
+--- a/ner_v2/tests/pattern/phone_number/phone_number_ner_tests.yaml
++++ b/ner_v2/tests/pattern/phone_number/phone_number_ner_tests.yaml
+@@ -128,6 +128,34 @@ tests:
+       output_id: 1
+       value: null
+       country_calling_code: null
++  - id: en_16
++    message: "pin 400001 and mobile 9820012345"
++    locale: "en-in"
++    outputs:
++    - original_text: "9820012345"
++      output_id: 1
++      value: "9820012345"
++      country_calling_code: '91'
++  - id: en_17
++    message: "pin 400001, call 9820012345 or 9819983132"
++    locale: "en-in"
++    outputs:
++    - original_text: "9820012345"
++      output_id: 1
++      value: "9820012345"
++      country_calling_code: '91'
++    - original_text: "9819983132"
++      output_id: 2
++      value: "9819983132"
++      country_calling_code: '91'
++  - id: en_18
++    message: "mobile 9820012345, pin 400001"
++    locale: "en-in"
++    outputs:
++    - original_text: "9820012345"
++      output_id: 1
++      value: "9820012345"
++      country_calling_code: '91'
+   hi:
+   - id: hi_1
+     message: "मेरे लिए ५००र्स ९८२०३३४४५५ पे भेज देना"
